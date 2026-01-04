@@ -69,12 +69,23 @@ $result = $stmt->get_result();
 document.querySelectorAll('.remove-wishlist').forEach(btn => {
     btn.addEventListener('click', function() {
         const wishlistId = this.getAttribute('data-id');
-        if(confirm('Remove from wishlist?')) {
-            // In a real app, use fetch to call an API
-            // For now, let's just simulate removal from UI
-            document.getElementById('wishlist-item-' + wishlistId).remove();
-            showToast('Wishlist', 'Item removed', 'success');
-        }
+        if(!confirm('Remove from wishlist?')) return;
+        fetch('wishlist_action.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `action=remove&wishlist_id=${wishlistId}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const el = document.getElementById('wishlist-item-' + wishlistId);
+                if (el) el.remove();
+                showToast('Wishlist', 'Item removed', 'success');
+            } else {
+                showToast('Wishlist', data.message || 'Failed to remove', 'error');
+            }
+        })
+        .catch(() => showToast('Wishlist', 'Network error', 'error'));
     });
 });
 </script>

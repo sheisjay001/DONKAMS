@@ -407,8 +407,8 @@ section {
 /* Products */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
 }
 
 .product-card {
@@ -778,6 +778,20 @@ footer {
     
     .cart-summary {
         width: 100%;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+    }
+
+    .product-detail-container {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    .product-actions {
+        flex-direction: column;
     }
 }
 

@@ -107,4 +107,40 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
+
+    const wishlistButtons = document.querySelectorAll('.wishlist-btn');
+    wishlistButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id');
+            const icon = this.querySelector('i');
+            const adding = icon.classList.contains('far');
+            const action = adding ? 'add' : 'remove';
+            fetch('wishlist_action.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=${action}&product_id=${productId}`
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (action === 'add') {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        showToast('Wishlist', 'Added to wishlist', 'success');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        showToast('Wishlist', 'Removed from wishlist', 'success');
+                    }
+                } else {
+                    showToast('Wishlist', data.message || 'Action failed', 'error');
+                }
+            })
+            .catch(() => {
+                showToast('Wishlist', 'Network error', 'error');
+            });
+        });
+    });
 });

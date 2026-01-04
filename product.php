@@ -1,5 +1,6 @@
 <?php
 require_once 'config/db.php';
+session_start();
 include 'includes/header.php';
 
 // Get Product ID
@@ -18,6 +19,16 @@ if ($result->num_rows === 0) {
 }
 
 $product = $result->fetch_assoc();
+
+$in_wishlist = false;
+if (isset($_SESSION['user_id'])) {
+    $uid = (int)$_SESSION['user_id'];
+    $pid = (int)$product['id'];
+    $chk = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?");
+    $chk->bind_param("ii", $uid, $pid);
+    $chk->execute();
+    $in_wishlist = (bool)$chk->get_result()->fetch_assoc();
+}
 
 // Fetch Related Products
 $stmt_related = $conn->prepare("SELECT * FROM products WHERE category_id = ? AND id != ? LIMIT 4");
@@ -64,7 +75,7 @@ $result_related = $stmt_related->get_result();
                         <i class="fas fa-shopping-cart"></i> Add to Cart
                     </button>
                     <button class="btn btn-outline wishlist-btn" data-id="<?php echo $product['id']; ?>" style="border: 2px solid var(--secondary-color); background: transparent; color: var(--secondary-color);">
-                        <i class="far fa-heart"></i>
+                        <i class="<?php echo $in_wishlist ? 'fas' : 'far'; ?> fa-heart"></i>
                     </button>
                 </div>
 
@@ -105,25 +116,6 @@ $result_related = $stmt_related->get_result();
     </div>
 </main>
 
-<script>
-    // Simple Wishlist Toggle (Frontend only for now, backend to be implemented)
-    document.querySelector('.wishlist-btn').addEventListener('click', function() {
-        const icon = this.querySelector('i');
-        if (icon.classList.contains('far')) {
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-            // Check if user is logged in (you might need a global JS variable for this)
-            // For now, just show toast
-            if (typeof showToast === 'function') {
-                showToast('Wishlist', 'Added to wishlist!', 'success');
-            } else {
-                alert('Added to wishlist!');
-            }
-        } else {
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-        }
-    });
-</script>
+<script></script>
 
 <?php include 'includes/footer.php'; ?>
