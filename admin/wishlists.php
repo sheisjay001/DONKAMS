@@ -1,6 +1,13 @@
 <?php
-require_once '../config/db.php';
+require_once __DIR__ . '/../config/db.php';
 include 'includes/header.php';
+
+$conn->query("CREATE TABLE IF NOT EXISTS wishlist (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    product_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
 
 $sql = "SELECT w.id, w.created_at, u.username, u.email, p.name as product_name, p.price 
         FROM wishlist w 
@@ -48,4 +55,3 @@ $result = $conn->query($sql);
 </div>
 
 <?php include 'includes/footer.php'; ?>
-
