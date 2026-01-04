@@ -39,6 +39,15 @@ if ($host === 'localhost' || getenv('ALLOW_DB_CREATE') === 'true') {
 // Set charset to utf8mb4
 $conn->set_charset("utf8mb4");
 
+$conn->query("CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('customer','admin') DEFAULT 'customer',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
+
 $conn->query("CREATE TABLE IF NOT EXISTS wishlist (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -59,6 +68,20 @@ function ensure_admin_user($conn) {
         $ins = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
         $ins->bind_param("ssss", $username, $email, $password, $role);
         $ins->execute();
+    }
+
+    $email2 = 'admin2@donkams.com';
+    $stmt2 = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt2->bind_param("s", $email2);
+    $stmt2->execute();
+    $res2 = $stmt2->get_result();
+    if ($res2->num_rows === 0) {
+        $username2 = 'Admin2';
+        $password2 = password_hash('Admin@2026!', PASSWORD_DEFAULT);
+        $role2 = 'admin';
+        $ins2 = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+        $ins2->bind_param("ssss", $username2, $email2, $password2, $role2);
+        $ins2->execute();
     }
 }
 ensure_admin_user($conn);
