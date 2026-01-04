@@ -1,4 +1,7 @@
-<?php session_start(); ?>
+<?php 
+session_start(); 
+require_once __DIR__ . '/includes/csrf.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
