@@ -17,8 +17,14 @@ function csrf_field() {
 }
 
 function verify_csrf_token() {
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die("CSRF Token Validation Failed");
+    if (!isset($_POST['csrf_token'])) {
+        die("CSRF Token Validation Failed: Token missing from form submission.");
+    }
+    if (!isset($_SESSION['csrf_token'])) {
+        die("CSRF Token Validation Failed: Token missing from session. Please refresh the page and try again.");
+    }
+    if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF Token Validation Failed: Token mismatch.");
     }
 }
-?>
+

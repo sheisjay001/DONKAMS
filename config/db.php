@@ -10,13 +10,15 @@ $port = getenv('DB_PORT') ?: 3306;
 $conn = mysqli_init();
 
 // Set SSL options if needed (TiDB Cloud requires SSL)
+$flags = 0;
 if (getenv('DB_HOST') && strpos(getenv('DB_HOST'), 'tidbcloud.com') !== false) {
     // Basic SSL setup - typically TiDB works with just forcing SSL
     $conn->ssl_set(NULL, NULL, NULL, NULL, NULL);
+    $flags = MYSQLI_CLIENT_SSL;
 }
 
 // Connect
-if (!$conn->real_connect($host, $username, $password, '', $port, NULL, MYSQLI_CLIENT_SSL)) {
+if (!$conn->real_connect($host, $username, $password, '', $port, NULL, $flags)) {
     die("Connect Error: " . mysqli_connect_error());
 }
 
@@ -37,4 +39,3 @@ if ($host === 'localhost' || getenv('ALLOW_DB_CREATE') === 'true') {
 // Set charset to utf8mb4
 $conn->set_charset("utf8mb4");
 
-?>
