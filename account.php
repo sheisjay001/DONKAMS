@@ -1,6 +1,7 @@
 <?php
 require_once 'config/db.php';
 session_start();
+require_once 'includes/csrf.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -9,6 +10,43 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_profile') {
+    verify_csrf_token();
+    $new_username = trim($_POST['username']);
+    $new_email = trim($_POST['email']);
+    $new_password = isset($_POST['new_password']) ? $_POST['new_password'] : '';
+    if ($new_username === '' || $new_email === '') {
+        $profile_msg = ['type' => 'error', 'text' => 'Username and Email are required'];
+    } else {
+        $check = $conn->prepare("SELECT id FROM users WHERE email = ? AND id <> ?");
+        $check->bind_param("si", $new_email, $user_id);
+        $check->execute();
+        $exists = $check->get_result()->num_rows > 0;
+        if ($exists) {
+            $profile_msg = ['type' => 'error', 'text' => 'Email is already in use'];
+        } else {
+            if ($new_password !== '') {
+                $hashed = password_hash($new_password, PASSWORD_DEFAULT);
+                $upd = $conn->prepare("UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?");
+                $upd->bind_param("sssi", $new_username, $new_email, $hashed, $user_id);
+            } else {
+                $upd = $conn->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
+                $upd->bind_param("ssi", $new_username, $new_email, $user_id);
+            }
+            if ($upd->execute()) {
+                $profile_msg = ['type' => 'success', 'text' => 'Profile updated'];
+                $stmt = $conn->prepare("SELECT username, email, created_at FROM users WHERE id = ?");
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $user = $stmt->get_result()->fetch_assoc();
+                $_SESSION['username'] = $user['username'];
+            } else {
+                $profile_msg = ['type' => 'error', 'text' => 'Update failed'];
+            }
+        }
+    }
+}
 
 // Fetch User Details
 $stmt = $conn->prepare("SELECT username, email, created_at FROM users WHERE id = ?");
@@ -104,6 +142,32 @@ include 'includes/header.php';
                             <a href="index.php" class="btn" style="margin-top: 15px;">Start Shopping</a>
                         </div>
                     <?php endif; ?>
+                </div>
+
+                <div id="profile-section" style="margin-top: 30px;">
+                    <h2 style="margin-bottom: 20px; border-bottom: 2px solid var(--secondary-color); display: inline-block; padding-bottom: 5px;">Edit Profile</h2>
+                    <?php if (isset($profile_msg)): ?>
+                        <p style="padding: 10px; border-radius: 5px; background: <?php echo $profile_msg['type'] === 'success' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $profile_msg['type'] === 'success' ? '#155724' : '#721c24'; ?>;">
+                            <?php echo htmlspecialchars($profile_msg['text']); ?>
+                        </p>
+                    <?php endif; ?>
+                    <form action="account.php#profile-section" method="POST" style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); max-width: 600px;">
+                        <?php echo csrf_field(); ?>
+                        <input type="hidden" name="action" value="update_profile">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="new_password">New Password (optional)</label>
+                            <input type="password" id="new_password" name="new_password" placeholder="Leave blank to keep current password">
+                        </div>
+                        <button type="submit" class="btn">Save Changes</button>
+                    </form>
                 </div>
 
             </div>
