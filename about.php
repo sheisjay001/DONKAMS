@@ -16,7 +16,7 @@ include 'includes/header.php';
             Welcome to <strong>DONKAMS</strong>, your number one source for all things electronics and gaming. We're dedicated to giving you the very best of gadgets, with a focus on dependability, customer service, and uniqueness.
         </p>
         <p style="margin-bottom: 1.5rem; line-height: 1.6;">
-            Founded in <?php echo date("Y"); ?>, DONKAMS has come a long way from its beginnings in Minna, Niger State. When we first started out, our passion for "One click, multiple solution" drove us to do intense research so that DONKAMS can offer you the world's most advanced electronics. We now serve customers all over Nigeria and are thrilled to be a part of the quirky, eco-friendly, fair trade wing of the electronics industry.
+            Founded in 2023, DONKAMS has come a long way from its beginnings in Minna, Niger State. When we first started out, our passion for "One click, multiple solution" drove us to do intense research so that DONKAMS can offer you the world's most advanced electronics. We now serve customers all over Nigeria and are thrilled to be a part of the quirky, eco-friendly, fair trade wing of the electronics industry.
         </p>
 
         <h2 style="color: var(--secondary-color); margin-bottom: 1rem; margin-top: 2rem;">Our Mission</h2>
