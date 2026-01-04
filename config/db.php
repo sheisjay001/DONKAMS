@@ -39,8 +39,24 @@ if ($host === 'localhost' || getenv('ALLOW_DB_CREATE') === 'true') {
 // Set charset to utf8mb4
 $conn->set_charset("utf8mb4");
 
+function ensure_admin_user($conn) {
+    $email = 'admin@donkams.com';
+    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    if ($res->num_rows === 0) {
+        $username = 'Admin';
+        $password = password_hash('admin123', PASSWORD_DEFAULT);
+        $role = 'admin';
+        $ins = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+        $ins->bind_param("ssss", $username, $email, $password, $role);
+        $ins->execute();
+    }
+}
+ensure_admin_user($conn);
+
 // Session Handler
 require_once __DIR__ . '/../includes/session_handler.php';
 $handler = new DBSessionHandler($conn);
 session_set_save_handler($handler, true);
-
