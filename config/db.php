@@ -1,24 +1,31 @@
 <?php
 // Database configuration
-$host = "localhost";
-$username = "root";
-$password = ""; // Default XAMPP password is empty
-$database = "donkams_store";
+$host = getenv('DB_HOST') ?: "localhost";
+$username = getenv('DB_USER') ?: "root";
+$password = getenv('DB_PASS') ?: ""; // Default XAMPP password is empty
+$database = getenv('DB_NAME') ?: "donkams_store";
+$port = getenv('DB_PORT') ?: 3306;
 
 // Create connection
-$conn = new mysqli($host, $username, $password);
+$conn = new mysqli($host, $username, $password, '', $port);
 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Create database if it doesn't exist
-$sql = "CREATE DATABASE IF NOT EXISTS $database";
-if ($conn->query($sql) === TRUE) {
-    $conn->select_db($database);
+// Create database if it doesn't exist (Only for local dev usually, remote DBs usually pre-exist)
+// We only attempt to create DB if we are on localhost or if explicitly allowed
+if ($host === 'localhost' || getenv('ALLOW_DB_CREATE') === 'true') {
+    $sql = "CREATE DATABASE IF NOT EXISTS $database";
+    if ($conn->query($sql) === TRUE) {
+        $conn->select_db($database);
+    } else {
+        die("Error creating database: " . $conn->error);
+    }
 } else {
-    die("Error creating database: " . $conn->error);
+    // For production/remote, just select the DB
+    $conn->select_db($database);
 }
 
 // Set charset to utf8mb4
