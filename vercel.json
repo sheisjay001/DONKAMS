@@ -1,15 +1,12 @@
 {
   "functions": {
-    "api/*.php": {
+    "*.php": {
+      "runtime": "vercel-php@0.7.0"
+    },
+    "admin/*.php": {
       "runtime": "vercel-php@0.7.0"
     }
   },
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/api/index.php"
-    }
-  ],
   "env": {
     "DB_HOST": "gateway01.us-east-1.prod.aws.tidbcloud.com",
     "DB_USER": "3L29dGQbKZZDWNM.root",
