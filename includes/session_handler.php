@@ -6,15 +6,15 @@ class DBSessionHandler implements SessionHandlerInterface {
         $this->conn = $conn;
     }
 
-    public function open($savePath, $sessionName) {
+    public function open(string $path, string $name): bool {
         return true;
     }
 
-    public function close() {
+    public function close(): bool {
         return true;
     }
 
-    public function read($id) {
+    public function read(string $id): string|false {
         $stmt = $this->conn->prepare("SELECT data FROM sessions WHERE id = ?");
         $stmt->bind_param("s", $id);
         if ($stmt->execute()) {
@@ -26,24 +26,27 @@ class DBSessionHandler implements SessionHandlerInterface {
         return "";
     }
 
-    public function write($id, $data) {
+    public function write(string $id, string $data): bool {
         $access = time();
         $stmt = $this->conn->prepare("REPLACE INTO sessions (id, access, data) VALUES (?, ?, ?)");
         $stmt->bind_param("sis", $id, $access, $data);
         return $stmt->execute();
     }
 
-    public function destroy($id) {
+    public function destroy(string $id): bool {
         $stmt = $this->conn->prepare("DELETE FROM sessions WHERE id = ?");
         $stmt->bind_param("s", $id);
         return $stmt->execute();
     }
 
-    public function gc($maxlifetime) {
+    public function gc(int $maxlifetime): int|false {
         $old = time() - $maxlifetime;
         $stmt = $this->conn->prepare("DELETE FROM sessions WHERE access < ?");
         $stmt->bind_param("i", $old);
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return $stmt->affected_rows;
+        }
+        return false;
     }
 }
-?>
+

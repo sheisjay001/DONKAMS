@@ -55,4 +55,4 @@ function verify_csrf_token() {
         die("CSRF Error: Token mismatch. Please refresh the page and try again.");
     }
 }
-?>
+
