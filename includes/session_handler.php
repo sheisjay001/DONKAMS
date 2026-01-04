@@ -4,6 +4,24 @@ class DBSessionHandler implements SessionHandlerInterface {
 
     public function __construct($conn) {
         $this->conn = $conn;
+        // Ensure the sessions table exists to prevent crashes on fresh deployments
+        $this->ensureTable();
+    }
+
+    private function ensureTable() {
+        try {
+            // Attempt to create the table if it doesn't exist.
+            // Using CREATE TABLE IF NOT EXISTS is generally safe and low-overhead for this scale.
+            $this->conn->query("CREATE TABLE IF NOT EXISTS sessions (
+                id VARCHAR(128) NOT NULL PRIMARY KEY,
+                access INT(10) UNSIGNED,
+                data TEXT
+            )");
+        } catch (Exception $e) {
+            // If creation fails (e.g. permissions), we log it but continue 
+            // hoping the table exists. If not, read/write will throw later.
+            error_log("Session table creation failed: " . $e->getMessage());
+        }
     }
 
     public function open(string $path, string $name): bool {
