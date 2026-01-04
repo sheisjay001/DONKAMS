@@ -7,11 +7,17 @@ $database = getenv('DB_NAME') ?: "donkams_store";
 $port = getenv('DB_PORT') ?: 3306;
 
 // Create connection
-$conn = new mysqli($host, $username, $password, '', $port);
+$conn = mysqli_init();
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Set SSL options if needed (TiDB Cloud requires SSL)
+if (getenv('DB_HOST') && strpos(getenv('DB_HOST'), 'tidbcloud.com') !== false) {
+    // Basic SSL setup - typically TiDB works with just forcing SSL
+    $conn->ssl_set(NULL, NULL, NULL, NULL, NULL);
+}
+
+// Connect
+if (!$conn->real_connect($host, $username, $password, '', $port, NULL, MYSQLI_CLIENT_SSL)) {
+    die("Connect Error: " . mysqli_connect_error());
 }
 
 // Create database if it doesn't exist (Only for local dev usually, remote DBs usually pre-exist)
