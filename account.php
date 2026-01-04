@@ -60,6 +60,11 @@ $order_stmt->bind_param("i", $user_id);
 $order_stmt->execute();
 $orders = $order_stmt->get_result();
 
+$wishlist_stmt = $conn->prepare("SELECT w.id as wishlist_id, p.name, p.price, c.name as category_name, w.created_at FROM wishlist w JOIN products p ON w.product_id = p.id JOIN categories c ON p.category_id = c.id WHERE w.user_id = ? ORDER BY w.created_at DESC");
+$wishlist_stmt->bind_param("i", $user_id);
+$wishlist_stmt->execute();
+$wishlist_items = $wishlist_stmt->get_result();
+
 include 'includes/header.php';
 ?>
 
@@ -168,6 +173,40 @@ include 'includes/header.php';
                         </div>
                         <button type="submit" class="btn">Save Changes</button>
                     </form>
+                </div>
+
+                <div id="wishlist-section" style="margin-top: 30px;">
+                    <h2 style="margin-bottom: 20px; border-bottom: 2px solid var(--secondary-color); display: inline-block; padding-bottom: 5px;">Wishlist</h2>
+                    <?php if ($wishlist_items->num_rows > 0): ?>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Added</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php while($w = $wishlist_items->fetch_assoc()): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($w['name']); ?></td>
+                                        <td><?php echo htmlspecialchars($w['category_name']); ?></td>
+                                        <td>₦<?php echo number_format($w['price'], 2); ?></td>
+                                        <td><?php echo date('M d, Y', strtotime($w['created_at'])); ?></td>
+                                    </tr>
+                                    <?php endwhile; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-state" style="text-align: center; padding: 40px; background: white; border-radius: 10px;">
+                            <i class="far fa-heart" style="font-size: 3rem; color: #ddd; margin-bottom: 15px;"></i>
+                            <p>Your wishlist is empty.</p>
+                            <a href="index.php" class="btn" style="margin-top: 15px;">Browse Products</a>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
             </div>
