@@ -1,4 +1,7 @@
-<?php session_start(); ?>
+<?php 
+session_start(); 
+require_once 'includes/csrf.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,7 +61,9 @@
                 echo '<p class="success-msg">' . htmlspecialchars($_GET['success']) . '</p>';
             }
             ?>
-            <?php require_once 'includes/csrf.php'; ?>
+            <?php 
+            // CSRF Included at top of file
+            ?>
             <form action="auth_action.php" method="POST">
                 <?php echo csrf_field(); ?>
                 <input type="hidden" name="action" value="login">

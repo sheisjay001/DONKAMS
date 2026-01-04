@@ -55,7 +55,9 @@
                 echo '<p class="error-msg">' . htmlspecialchars($_GET['error']) . '</p>';
             }
             ?>
-            <?php require_once 'includes/csrf.php'; ?>
+            <?php 
+            // CSRF Included at top of file
+            ?>
             <form action="auth_action.php" method="POST">
                 <?php echo csrf_field(); ?>
                 <input type="hidden" name="action" value="register">
