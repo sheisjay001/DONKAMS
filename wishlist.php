@@ -1,6 +1,6 @@
 <?php
-session_start();
 require_once 'config/db.php';
+session_start();
 include 'includes/header.php';
 
 // Check if user is logged in

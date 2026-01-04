@@ -1,6 +1,6 @@
 <?php
-session_start();
 require_once 'config/db.php';
+session_start();
 require_once 'includes/csrf.php';
 include 'includes/header.php';
 

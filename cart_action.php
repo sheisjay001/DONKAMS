@@ -1,6 +1,6 @@
 <?php
-session_start();
 require_once 'config/db.php';
+session_start();
 
 // Initialize cart if not exists
 if (!isset($_SESSION['cart'])) {

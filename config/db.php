@@ -39,3 +39,8 @@ if ($host === 'localhost' || getenv('ALLOW_DB_CREATE') === 'true') {
 // Set charset to utf8mb4
 $conn->set_charset("utf8mb4");
 
+// Session Handler
+require_once __DIR__ . '/../includes/session_handler.php';
+$handler = new DBSessionHandler($conn);
+session_set_save_handler($handler, true);
+
