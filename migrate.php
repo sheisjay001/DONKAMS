@@ -108,5 +108,26 @@ if ($result->num_rows == 0) {
     }
 }
 
+// Seed a second admin user with new credentials
+$new_admin_email = 'admin2@donkams.com';
+$check2 = $conn->prepare("SELECT id FROM users WHERE email = ?");
+$check2->bind_param("s", $new_admin_email);
+$check2->execute();
+$res2 = $check2->get_result();
+if ($res2->num_rows == 0) {
+    $username2 = 'Admin2';
+    $password2 = password_hash('Admin@2026!', PASSWORD_DEFAULT);
+    $role2 = 'admin';
+    $ins2 = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+    $ins2->bind_param("ssss", $username2, $new_admin_email, $password2, $role2);
+    if ($ins2->execute()) {
+        echo "<p style='color: green;'>Second admin created (Email: $new_admin_email, Password: Admin@2026!)</p>";
+    } else {
+        echo "<p style='color: red;'>Error creating second admin: " . $ins2->error . "</p>";
+    }
+} else {
+    echo "<p style='color: #555;'>Second admin already exists (Email: $new_admin_email)</p>";
+}
+
 echo "<p>Migration completed. <a href='index.php'>Go to Home</a></p>";
 ?>
