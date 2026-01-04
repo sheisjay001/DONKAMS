@@ -39,6 +39,13 @@ if ($host === 'localhost' || getenv('ALLOW_DB_CREATE') === 'true') {
 // Set charset to utf8mb4
 $conn->set_charset("utf8mb4");
 
+$conn->query("CREATE TABLE IF NOT EXISTS wishlist (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    product_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
+
 function ensure_admin_user($conn) {
     $email = 'admin@donkams.com';
     $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
