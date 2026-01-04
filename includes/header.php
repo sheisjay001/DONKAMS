@@ -30,8 +30,8 @@
             <ul class="nav-links">
                 <li><a href="index.php">Home</a></li>
                 <li><a href="index.php#products">Products</a></li>
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><a href="about.php">About Us</a></li>
+                <li><a href="contact.php">Contact</a></li>
                 <li>
                     <a href="cart.php" class="cart-link">
                         <i class="fas fa-shopping-cart"></i> Cart 
