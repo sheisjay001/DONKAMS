@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Basic validation
         if ($password !== $confirm_password) {
+            $_SESSION['old_input'] = ['username' => $username, 'email' => $email];
             header("Location: register.php?error=Passwords do not match");
             exit();
         }
@@ -26,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
+            $_SESSION['old_input'] = ['username' => $username, 'email' => $email];
             header("Location: register.php?error=Username or Email already exists");
             exit();
         }
@@ -39,8 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("sss", $username, $email, $hashed_password);
 
         if ($stmt->execute()) {
+            if (isset($_SESSION['old_input'])) unset($_SESSION['old_input']);
             header("Location: login.php?success=Registration successful! Please login.");
         } else {
+            $_SESSION['old_input'] = ['username' => $username, 'email' => $email];
             header("Location: register.php?error=Registration failed. Please try again.");
         }
         $stmt->close();
@@ -62,6 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
                 
+                // Clear old input if any
+                if (isset($_SESSION['old_input'])) unset($_SESSION['old_input']);
+
                 if ($user['role'] === 'admin') {
                     header("Location: admin/dashboard.php");
                 } else {
@@ -74,9 +81,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 exit();
             } else {
+                $_SESSION['old_input'] = ['email' => $email];
                 header("Location: login.php?error=Invalid password");
             }
         } else {
+            $_SESSION['old_input'] = ['email' => $email];
             header("Location: login.php?error=User not found");
         }
         $stmt->close();

@@ -22,14 +22,14 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 }
 ?>
 
-<main class="container cart-page" style="padding: 2rem 0;">
+<div class="container cart-page" style="padding: var(--space-2xl) 0;">
     <h2 class="section-title">Your Shopping Cart</h2>
     
     <?php if (empty($cart_items)): ?>
-        <div class="empty-cart" style="text-align: center; padding: 3rem;">
-            <i class="fas fa-shopping-cart" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
-            <p>Your cart is currently empty.</p>
-            <a href="index.php" class="btn" style="margin-top: 1rem;">Start Shopping</a>
+        <div class="empty-cart" style="text-align: center; padding: var(--space-2xl); background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+            <i class="fas fa-shopping-cart" style="font-size: 4rem; color: var(--border-color); margin-bottom: var(--space-md);"></i>
+            <p style="color: var(--text-light); margin-bottom: var(--space-md);">Your cart is currently empty.</p>
+            <a href="index.php" class="btn">Start Shopping</a>
         </div>
     <?php else: ?>
         <div class="cart-container">
@@ -46,21 +46,21 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                 <tbody>
                     <?php foreach ($cart_items as $item): ?>
                     <tr data-id="<?php echo $item['id']; ?>">
-                        <td class="product-col">
+                        <td class="product-col" data-label="Product">
                             <img src="images/<?php echo $item['image']; ?>" alt="<?php echo $item['name']; ?>" class="cart-img" onerror="this.src='https://via.placeholder.com/50'">
-                            <span><?php echo $item['name']; ?></span>
+                            <span style="font-weight: 500;"><?php echo $item['name']; ?></span>
                         </td>
-                        <td>₦<?php echo number_format($item['price'], 2); ?></td>
-                        <td>
+                        <td data-label="Price">₦<?php echo number_format($item['price'], 2); ?></td>
+                        <td data-label="Quantity">
                             <div class="qty-control">
-                                <button class="qty-btn minus" onclick="updateCart(<?php echo $item['id']; ?>, <?php echo $item['qty'] - 1; ?>)">-</button>
-                                <input type="number" value="<?php echo $item['qty']; ?>" min="1" onchange="updateCart(<?php echo $item['id']; ?>, this.value)">
-                                <button class="qty-btn plus" onclick="updateCart(<?php echo $item['id']; ?>, <?php echo $item['qty'] + 1; ?>)">+</button>
+                                <button class="qty-btn minus" onclick="updateCart(<?php echo $item['id']; ?>, <?php echo $item['qty'] - 1; ?>)" aria-label="Decrease quantity">-</button>
+                                <input type="number" value="<?php echo $item['qty']; ?>" min="1" onchange="updateCart(<?php echo $item['id']; ?>, this.value)" aria-label="Quantity">
+                                <button class="qty-btn plus" onclick="updateCart(<?php echo $item['id']; ?>, <?php echo $item['qty'] + 1; ?>)" aria-label="Increase quantity">+</button>
                             </div>
                         </td>
-                        <td>₦<?php echo number_format($item['subtotal'], 2); ?></td>
-                        <td>
-                            <button class="remove-btn" onclick="removeFromCart(<?php echo $item['id']; ?>)">
+                        <td data-label="Total" style="font-weight: 700; color: var(--secondary-color);">₦<?php echo number_format($item['subtotal'], 2); ?></td>
+                        <td data-label="Action">
+                            <button class="remove-btn" onclick="removeFromCart(<?php echo $item['id']; ?>)" style="color: var(--error-color); background: none; border: none; cursor: pointer; font-size: 1.1rem;" aria-label="Remove item">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
@@ -71,15 +71,15 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
             
             <div class="cart-summary">
                 <h3>Cart Total</h3>
-                <p class="total-amount">₦<?php echo number_format($total_price, 2); ?></p>
-                <div class="cart-actions">
-                    <button onclick="clearCart()" class="btn btn-outline">Clear Cart</button>
-                    <a href="checkout.php" class="btn">Proceed to Checkout</a>
+                <p class="total-amount" style="font-size: 2rem; color: var(--secondary-color); font-weight: 700; margin: var(--space-md) 0;">₦<?php echo number_format($total_price, 2); ?></p>
+                <div class="cart-actions" style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
+                    <button onclick="clearCart()" class="btn" style="background-color: transparent; border: 1px solid var(--error-color); color: var(--error-color);">Clear Cart</button>
+                    <a href="checkout.php" class="btn" style="flex: 1; text-align: center;">Proceed to Checkout</a>
                 </div>
             </div>
         </div>
     <?php endif; ?>
-</main>
+</div>
 
 <script>
 function updateCart(id, qty) {

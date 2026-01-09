@@ -55,29 +55,35 @@ require_once __DIR__ . '/includes/csrf.php';
             </div>
             
             <?php
+            $old_email = isset($_SESSION['old_input']['email']) ? $_SESSION['old_input']['email'] : '';
+            // Clear old input
+            if (isset($_SESSION['old_input'])) unset($_SESSION['old_input']);
+            ?>
+
+            <?php
             if (isset($_GET['error'])) {
-                echo '<p class="error-msg">' . htmlspecialchars($_GET['error']) . '</p>';
+                echo '<p class="error-msg" role="alert"><i class="fas fa-exclamation-circle"></i> ' . htmlspecialchars($_GET['error']) . '</p>';
             }
             if (isset($_GET['success'])) {
-                echo '<p class="success-msg">' . htmlspecialchars($_GET['success']) . '</p>';
+                echo '<p class="success-msg" role="alert"><i class="fas fa-check-circle"></i> ' . htmlspecialchars($_GET['success']) . '</p>';
             }
             ?>
             <?php 
             // CSRF Included at top of file
             ?>
-            <form action="auth_action.php" method="POST">
+            <form action="auth_action.php" method="POST" novalidate>
                 <?php echo csrf_field(); ?>
                 <input type="hidden" name="action" value="login">
                 <input type="hidden" name="redirect" value="<?php echo isset($_GET['redirect']) ? htmlspecialchars($_GET['redirect']) : ''; ?>">
                 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    <input type="email" id="email" name="email" required placeholder="Enter your email" value="<?php echo htmlspecialchars($old_email); ?>" aria-required="true">
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    <input type="password" id="password" name="password" required placeholder="Enter your password" aria-required="true">
                 </div>
 
                 <button type="submit" class="btn btn-full">Login</button>
@@ -85,6 +91,7 @@ require_once __DIR__ . '/includes/csrf.php';
             <p class="auth-link">Don't have an account? <a href="register.php">Register here</a></p>
         </div>
     </main>
-
+    
+    <script src="js/script.js"></script>
 </body>
 </html>

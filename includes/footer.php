@@ -1,3 +1,7 @@
+    </main>
+    
+    <div class="toast-container" id="toast-container"></div>
+
     <footer>
         <div class="footer-content">
             <div class="footer-section">
